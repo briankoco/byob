@@ -1,6 +1,8 @@
 py-cryptonight>=0.2.4
 git+https://github.com/jtgrassie/pyrx.git#egg=pyrx
 
+zip==0.0.2;python_version>'3'
+zip-files==0.4.1;python_version>'3'
 mss==5.0.0;python_version>'3'
 WMI==1.4.9;python_version>'3'
 pyxhook==1.0.0;python_version>'3'
